@@ -61,7 +61,7 @@ class NeuralNetwork_2Layer():
             yield l[i: i + n]
 
     # Training with backpropagation.
-    def train(self, xVals, yVals, epochs=1, minibatches=False, mbs=100):
+    def train(self, xVals, yVals, epochs=2, minibatches=False, mbs=100):
         # TODO: Implement backprop. allow minibatches. mbs should specify the size of each minibatch.
         # TODO: Flatten the array
         xVals = xVals.reshape(xVals.shape[0], IMAGE_SIZE)
@@ -73,6 +73,7 @@ class NeuralNetwork_2Layer():
         else:
             for i in range(epochs):
                 # Do I need to call sigmoid individually for each time and add it to a new list?
+                print("Epoch :", i)
                 for j in range(60000):
                     layer1, layer2 = self.__forward(xVals[j])
                     l2e = yVals[j] - layer2
@@ -95,7 +96,6 @@ class NeuralNetwork_2Layer():
     def predict(self, xVals):
         xVals = xVals.reshape(xVals.shape[0], IMAGE_SIZE)
         _, layer2 = self.__forward(xVals)
-        print(layer2[0])
         for pred in layer2:
             index = tf.argmax(pred)
             for i in range(len(pred)):
