@@ -23,10 +23,10 @@ IMAGE_SIZE = 784
 # ALGORITHM = "guesser"
 
 
-# ALGORITHM = "custom_net"
+ALGORITHM = "custom_net"
 
 
-ALGORITHM = "tf_net"
+# ALGORITHM = "tf_net"
 
 
 class NeuralNetwork_2Layer():
@@ -41,12 +41,6 @@ class NeuralNetwork_2Layer():
     # Sigmoid function.
     def __sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
-        # if x >= 0:
-        #   num = np.exp(-x)
-        #  return 1 / (1 + num)
-        # else:
-        #   num = np.exp(x)
-        #  return num / (1 + num)
 
     # Sigmoid prime function.
     def __sigmoidDerivative(self, x):
@@ -67,33 +61,29 @@ class NeuralNetwork_2Layer():
             yield l[i: i + n]
 
     # Training with backpropagation.
-    def train(self, xVals, yVals, epochs=10, minibatches=False,
-              mbs=100):  # TODO: Implement backprop. allow minibatches. mbs should specify the size of each minibatch.
-        if ALGORITHM == "custom_net":  # TODO: Implement my net training
-            # TODO: Flatten the array
-            xVals = xVals.reshape(-1, 28 ** 2)
-            if minibatches:
-                for i in range(10):
-                    for j in self.__batchGenerator(xVals, mbs):
-                        pass
-                pass
-            else:
-                for i in range(epochs):
-                    layer1, layer2 = self.__forward(xVals)
-                    l2e = yVals - layer2
+    def train(self, xVals, yVals, epochs=1, minibatches=False, mbs=100):
+        # TODO: Implement backprop. allow minibatches. mbs should specify the size of each minibatch.
+        # TODO: Flatten the array
+        xVals = xVals.reshape(xVals.shape[0], IMAGE_SIZE)
+        if minibatches:
+            for i in range(epochs):
+                for j in self.__batchGenerator(xVals, mbs):
+                    pass
+            pass
+        else:
+            for i in range(epochs):
+                # Do I need to call sigmoid individually for each time and add it to a new list?
+                for j in range(60000):
+                    layer1, layer2 = self.__forward(xVals[j])
+                    l2e = yVals[j] - layer2
                     l2d = l2e * self.__sigmoidDerivative(layer2)
                     l1e = l2d.dot(self.W2.T)
                     l1d = l1e * self.__sigmoidDerivative(layer1)
-                    l1a = xVals.T.dot(l1d) * self.lr
-                    l2a = layer1.T.dot(l2d) * self.lr
+
+                    l1a = xVals[j].reshape(xVals[j].shape[0], 1).dot((l1d.reshape(l1d.shape[0], 1)).T) * self.lr
+                    l2a = layer1.reshape(layer1.shape[0], 1).dot(l2d.reshape(l2d.shape[0], 1).T) * self.lr
                     self.W1 += l1a
                     self.W2 += l2a
-                return
-        elif ALGORITHM == "tf_net":  # TODO: Implement tf net training
-            if minibatches:
-                pass
-            else:
-                pass
 
     # Forward pass.
     def __forward(self, input):
@@ -103,7 +93,16 @@ class NeuralNetwork_2Layer():
 
     # Predict.
     def predict(self, xVals):
+        xVals = xVals.reshape(xVals.shape[0], IMAGE_SIZE)
         _, layer2 = self.__forward(xVals)
+        print(layer2[0])
+        for pred in layer2:
+            index = tf.argmax(pred)
+            for i in range(len(pred)):
+                if i != index:
+                    pred[i] = 0
+                else:
+                    pred[i] = 1
         return layer2
 
 
@@ -123,7 +122,7 @@ class BuildTfNet():
         preds = self.model.predict(x)
         for pred in preds:
             index = tf.argmax(pred)
-            for i in range(NUM_CLASSES):
+            for i in range(len(pred)):
                 if i != index:
                     pred[i] = 0
                 else:
@@ -157,10 +156,11 @@ def getRawData():
 
 
 def preprocessData(raw):
-    ((xTrain, yTrain), (xTest, yTest)) = raw  # TODO: Add range reduction here (0-255 ==> 0.0-1.0).
+    ((xTrain, yTrain), (xTest, yTest)) = raw
     # range reduction
-    xTrain = xTrain / 255
-    xTest = xTest / 255
+    xTrain = xTrain / 255.0
+    # print(xTrain[0])
+    xTest = xTest / 255.0
     yTrainP = to_categorical(yTrain, NUM_CLASSES)
     yTestP = to_categorical(yTest, NUM_CLASSES)
     print("New shape of xTrain dataset: %s." % str(xTrain.shape))
@@ -193,7 +193,7 @@ def runModel(data, model):
         return guesserClassifier(data)
     elif ALGORITHM == "custom_net":
         print("Testing Custom_NN.")
-        print("Not yet implemented.")  # TODO: Write code to run your custon neural net.
+        # TODO: Write code to run your custon neural net.
         return model.predict(data)
     elif ALGORITHM == "tf_net":
         print("Testing TF_NN.")
