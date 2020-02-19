@@ -21,11 +21,7 @@ IMAGE_SIZE = 784
 
 # Use these to set the algorithm to use.
 # ALGORITHM = "guesser"
-
-
 ALGORITHM = "custom_net"
-
-
 # ALGORITHM = "tf_net"
 
 
@@ -46,9 +42,11 @@ class NeuralNetwork_2Layer():
     def __sigmoidDerivative(self, x):
         return self.__sigmoid(x) * (1 - self.__sigmoid(x))
 
+    # ReLU function
     def __relu(self, x):
         return np.maximum(0, x)
 
+    # ReLU prime function
     def __reluDerviative(self, x):
         if x > 0:
             return 1
@@ -62,8 +60,6 @@ class NeuralNetwork_2Layer():
 
     # Training with backpropagation.
     def train(self, xVals, yVals, epochs=2, minibatches=False, mbs=100):
-        # TODO: Implement backprop. allow minibatches. mbs should specify the size of each minibatch.
-        # TODO: Flatten the array
         xVals = xVals.reshape(xVals.shape[0], IMAGE_SIZE)
         if minibatches:
             for i in range(epochs):
@@ -72,7 +68,6 @@ class NeuralNetwork_2Layer():
             pass
         else:
             for i in range(epochs):
-                # Do I need to call sigmoid individually for each time and add it to a new list?
                 print("Epoch :", i)
                 for j in range(60000):
                     layer1, layer2 = self.__forward(xVals[j])
@@ -80,7 +75,6 @@ class NeuralNetwork_2Layer():
                     l2d = l2e * self.__sigmoidDerivative(layer2)
                     l1e = l2d.dot(self.W2.T)
                     l1d = l1e * self.__sigmoidDerivative(layer1)
-
                     l1a = xVals[j].reshape(xVals[j].shape[0], 1).dot((l1d.reshape(l1d.shape[0], 1)).T) * self.lr
                     l2a = layer1.reshape(layer1.shape[0], 1).dot(l2d.reshape(l2d.shape[0], 1).T) * self.lr
                     self.W1 += l1a
@@ -193,7 +187,6 @@ def runModel(data, model):
         return guesserClassifier(data)
     elif ALGORITHM == "custom_net":
         print("Testing Custom_NN.")
-        # TODO: Write code to run your custon neural net.
         return model.predict(data)
     elif ALGORITHM == "tf_net":
         print("Testing TF_NN.")
