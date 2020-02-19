@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import scipy
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.utils import to_categorical
