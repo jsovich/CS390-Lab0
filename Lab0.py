@@ -195,7 +195,7 @@ def runModel(data, model):
         raise ValueError("Algorithm not recognized.")
 
 
-def evalResults(data, preds):  # TODO: Add F1 score confusion matrix here.
+def evalResults(data, preds):
     xTest, yTest = data
     acc = 0
     truePos = 0
