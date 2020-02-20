@@ -1,7 +1,7 @@
 # CS390-Lab0
 CS390NIP Lab0
 
-##Custom Net
+## Custom Net
 To implement this section, I first started by looking at the slides. Working off of the skeleton code, I reviewed the slides 
 that were over how to calculate backpropagation. From this, I implemented training, calculating the values needed for backpropagation
 as I went. By using the weights, I can run a feed forward process and get the output of the individual layers. From there I calculate layer 2 
@@ -10,7 +10,8 @@ I then added the adjustments to the respective weights and ran the training mode
 had to reshape the matrices to the correct size as I wanted the adjustment matrices to be the same dimensions as the weight matrices. Finally,
 I took the prediction vector and one hot encoded it so that each output would give a "real" prediction rather then a confidence value
 for each individual number. 
-##TensorFlow Net
+
+## TensorFlow Net
 To implement this section, I first started by looking at the Keras documentation and the slides from the class.
 Using the code in the slides as an example to work from, I started to format the class that I would need to create
 the neural net. Modeling it somewhat after the skeleton code provided for the custom neural net, I created an init, train,

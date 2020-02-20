@@ -235,7 +235,7 @@ def evalResults(data, preds):  # TODO: Add F1 score confusion matrix here.
             allList[predIndex][yIndex] += 1
             falseNeg += 1
             falsePos += 1
-            
+
     accuracy = acc / preds.shape[0]
     precision = truePos / (truePos + falsePos)
     recall = truePos / (truePos + falseNeg)
