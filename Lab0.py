@@ -4,6 +4,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.utils import to_categorical
 import random
+import pandas as pd
 
 # Setting random seeds to keep everything deterministic.
 random.seed(1618)
@@ -175,7 +176,7 @@ def trainModel(data):
     elif ALGORITHM == "tf_net":
         print("Building and training TF_NN.")
         tfNet = BuildTfNet()
-        tfNet.train(xTrain, yTrain, 20)
+        tfNet.train(xTrain, yTrain, 10)
         return tfNet
     else:
         raise ValueError("Algorithm not recognized.")
@@ -197,12 +198,55 @@ def runModel(data, model):
 def evalResults(data, preds):  # TODO: Add F1 score confusion matrix here.
     xTest, yTest = data
     acc = 0
+    truePos = 0
+    falsePos = 0
+    falseNeg = 0
+    zeroList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    oneList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    twoList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    threeList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    fourList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    fiveList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    sixList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    sevenList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    eightList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    nineList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    totalList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    allList = [zeroList, oneList, twoList, threeList, fourList, fiveList, sixList, sevenList, eightList, nineList, totalList]
     for i in range(preds.shape[0]):
-        if np.array_equal(preds[i], yTest[i]):   acc = acc + 1
+        predIndex = -1
+        yIndex = -1
+        for j in range(len(preds[i])):
+            if preds[i][j] == 1:
+                predIndex = j
+                allList[predIndex][10] += 1
+                break
+        for k in range(len(yTest[i])):
+            if yTest[i][k] == 1:
+                yIndex = k
+                allList[10][yIndex] += 1
+                allList[10][10] += 1
+                break
+        if np.array_equal(preds[i], yTest[i]):
+            allList[predIndex][predIndex] += 1
+            truePos += 1
+            acc = acc + 1
+        else:
+            allList[predIndex][yIndex] += 1
+            falseNeg += 1
+            falsePos += 1
+            
     accuracy = acc / preds.shape[0]
+    precision = truePos / (truePos + falsePos)
+    recall = truePos / (truePos + falseNeg)
+    f1Score = (2 * precision * recall) / (precision + recall)
     print("Classifier algorithm: %s" % ALGORITHM)
     print("Classifier accuracy: %f%%" % (accuracy * 100))
     print()
+    print("F1 Score: %.5f" % f1Score)
+    print("Confusion matrix")
+    df = pd.DataFrame(allList, columns=['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Total'], index=['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Total'])
+    print(df)
 
 
 # =========================<Main>================================================
